@@ -2,8 +2,8 @@
 
 พอร์ตโฟลิโอสาย AI Engineer แบบ static ไม่ต้อง build ใช้ HTML + CSS + JavaScript ล้วน
 
-- ฉบับไทย: https://oranut-ai-portfolio.vercel.app
-- ฉบับอังกฤษ: https://oranut-ai-portfolio.vercel.app/en/
+- ฉบับไทย: https://oranut-signal.vercel.app
+- ฉบับอังกฤษ: https://oranut-signal.vercel.app/en/
 
 ## ขอบเขตของ repo นี้
 
@@ -15,12 +15,12 @@ repo นี้อธิบายงานวิศวกรรม AI ของ�
 - จุดตรวจความยินยอมและขอบเขตข้อมูลส่วนบุคคล
 - สิ่งที่วัดแล้วและสิ่งที่ยังไม่ได้วัด
 
-repo นี้ไม่มีไฟล์ PDF ของเอกสาร เพราะเอกสารวิเคราะห์อยู่ใน repo `ba-portfolio` และ `sa-portfolio`
+repo นี้ไม่มีไฟล์ PDF ของเอกสาร เพราะเอกสารวิเคราะห์อยู่ใน repo `oranut-blueprint`
 
 ## โครงสร้าง
 
 ```
-ai-portfolio/
+oranut-signal/
 ├── index.html          หน้าภาษาไทย
 ├── en/index.html       หน้าภาษาอังกฤษ
 ├── styles.css          ธีม Signal (เข้ม ตัดด้วยสีเขียวมะนาว)
@@ -32,6 +32,6 @@ ai-portfolio/
 ## ดูในเครื่อง
 
 ```powershell
-cd ai-portfolio
+cd oranut-signal
 python -m http.server 8080
 ```
