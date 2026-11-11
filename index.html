@@ -56,7 +56,7 @@
           <li>เวกเตอร์ 1,536 มิติ บน pgvector + HNSW (cosine)</li>
           <li>ดึงบริบท 5 รายการก่อนทุกคำตอบ</li>
           <li>เกณฑ์ความคล้าย 0.6 จากการปรับเทียบจริง</li>
-          <li>p95 3.16 วินาที เทียบเป้า 3.5 วินาที</li>
+          <li>p95 1.31 วินาที ที่ข้อมูล 5,000 บันทึก เทียบเป้า 3.5 วินาที</li>
         </ul>
         <p class="card-note">ตัวเลขทั้งหมดมาจากระบบที่ deploy แล้ว ไม่ใช่การประมาณ</p>
       </aside>
@@ -66,7 +66,7 @@
       <div class="metric"><span class="metric-num">1,536</span><span class="metric-label">มิติของเวกเตอร์</span></div>
       <div class="metric"><span class="metric-num">5</span><span class="metric-label">บริบทต่อคำตอบ</span></div>
       <div class="metric"><span class="metric-num">0.6</span><span class="metric-label">เกณฑ์ความคล้าย</span></div>
-      <div class="metric"><span class="metric-num">3.16 s</span><span class="metric-label">p95 ของการค้นหา</span></div>
+      <div class="metric"><span class="metric-num">1.31 s</span><span class="metric-label">p95 ของการค้นหา</span></div>
     </section>
 
     <section class="section wrap" id="pipeline">
@@ -214,7 +214,7 @@
         <article class="card">
           <h3>วัดแล้ว</h3>
           <p>
-            p95 ของการค้นหา 3.16 วินาที จากคำถาม 20 ข้อบนข้อมูล 30 บันทึก · อัตราการตอบที่อ้างอิงบริบท
+            p95 ของการค้นหา 1.31 วินาที จากการยิง 100 คำขอบนข้อมูล 5,000 บันทึก · อัตราการตอบที่อ้างอิงบริบท
             ถูกตรวจด้วยมือ · 22 เทสต์อัตโนมัติผ่านใน CI ทุกครั้งที่ push
           </p>
         </article>

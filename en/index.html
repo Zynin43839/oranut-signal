@@ -57,7 +57,7 @@
           <li>1,536-dimension vectors on pgvector with an HNSW cosine index</li>
           <li>Five contexts retrieved before every answer</li>
           <li>A 0.6 similarity floor, tuned on the real data</li>
-          <li>p95 of 3.16 s against a 3.5 s target</li>
+          <li>p95 of 1.31 s over 5,000 entries, against a 3.5 s target</li>
         </ul>
         <p class="card-note">Every figure comes from the deployed system, not an estimate.</p>
       </aside>
@@ -67,7 +67,7 @@
       <div class="metric"><span class="metric-num">1,536</span><span class="metric-label">vector dimensions</span></div>
       <div class="metric"><span class="metric-num">5</span><span class="metric-label">contexts per answer</span></div>
       <div class="metric"><span class="metric-num">0.6</span><span class="metric-label">similarity floor</span></div>
-      <div class="metric"><span class="metric-num">3.16 s</span><span class="metric-label">search p95</span></div>
+      <div class="metric"><span class="metric-num">1.31 s</span><span class="metric-label">search p95</span></div>
     </section>
 
     <section class="section wrap" id="pipeline">
@@ -215,7 +215,7 @@
         <article class="card">
           <h3>Measured</h3>
           <p>
-            Search p95 of 3.16 s from 20 questions over 30 entries · grounding checked by hand ·
+            Search p95 of 1.31 s from 100 requests over 5,000 entries · grounding checked by hand ·
             22 automated tests passing in CI on every push.
           </p>
         </article>
