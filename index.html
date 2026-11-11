@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Oranut Suphatamat (Dao) | AI Engineer</title>
+  <meta name="description" content="พอร์ตโฟลิโอสาย AI Engineer: ระบบค้นคืนเชิงความหมายด้วย pgvector, RAG ที่อ้างอิงเฉพาะบันทึกของผู้ใช้ และจุดตรวจความยินยอมก่อนเรียกโมเดล" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">ข้ามไปยังเนื้อหาหลัก</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark">AI</span>
+        <span class="brand-text">Oranut Suphatamat</span>
+      </a>
+      <nav class="site-nav" id="site-nav" aria-label="เมนูหลัก">
+        <a href="#pipeline">ไปป์ไลน์</a>
+        <a href="#retrieval">การค้นคืน</a>
+        <a href="#models">โมเดล</a>
+        <a href="#privacy">ความเป็นส่วนตัว</a>
+        <a href="#evidence">หลักฐาน</a>
+        <a href="#next">ก้าวต่อไป</a>
+        <a href="#contact">ติดต่อ</a>
+      </nav>
+      <a class="btn btn-ghost" href="en/" hreflang="en" lang="en" aria-label="English version">EN</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="เปิดเมนู">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" id="top">
+      <div class="hero-copy">
+        <p class="kicker">Portfolio · AI Engineer</p>
+        <h1>Oranut Suphatamat (Dao)</h1>
+        <p class="hero-lead">
+          ผมสร้างระบบที่ค้นคืนข้อมูลของผู้ใช้เองแล้วตอบคำถามจากข้อมูลนั้น โดยออกแบบให้ทุกคำตอบ
+          อ้างอิงบริบทที่ดึงมาได้จริง และให้เจ้าของข้อมูลยังเป็นผู้ควบคุมว่าข้อความของเขาจะออกนอกระบบเมื่อไร
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#pipeline">ดูไปป์ไลน์ RAG</a>
+          <a class="btn btn-ghost" href="https://rag-diary-app.vercel.app" target="_blank" rel="noopener">ลองใช้แอปจริง</a>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="ตัวเลขที่ตรวจสอบได้">
+        <p class="card-label">สิ่งที่วัดได้</p>
+        <ul class="check-list">
+          <li>เวกเตอร์ 1,536 มิติ บน pgvector + HNSW (cosine)</li>
+          <li>ดึงบริบท 5 รายการก่อนทุกคำตอบ</li>
+          <li>เกณฑ์ความคล้าย 0.6 จากการปรับเทียบจริง</li>
+          <li>p95 3.16 วินาที เทียบเป้า 3.5 วินาที</li>
+        </ul>
+        <p class="card-note">ตัวเลขทั้งหมดมาจากระบบที่ deploy แล้ว ไม่ใช่การประมาณ</p>
+      </aside>
+    </section>
+
+    <section class="metrics wrap" aria-label="ตัวเลขสรุป">
+      <div class="metric"><span class="metric-num">1,536</span><span class="metric-label">มิติของเวกเตอร์</span></div>
+      <div class="metric"><span class="metric-num">5</span><span class="metric-label">บริบทต่อคำตอบ</span></div>
+      <div class="metric"><span class="metric-num">0.6</span><span class="metric-label">เกณฑ์ความคล้าย</span></div>
+      <div class="metric"><span class="metric-num">3.16 s</span><span class="metric-label">p95 ของการค้นหา</span></div>
+    </section>
+
+    <section class="section wrap" id="pipeline">
+      <div class="section-head">
+        <p class="kicker">ไปป์ไลน์</p>
+        <h2>จากข้อความหนึ่งประโยค ถึงคำตอบที่อ้างอิงได้</h2>
+        <p class="section-sub">ทุกขั้นมีจุดที่ล้มเหลวได้ และระบบถูกออกแบบให้บอกผู้ใช้แทนที่จะเงียบ</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div>
+            <h3>ฝังข้อความเป็นเวกเตอร์</h3>
+            <p>ใช้ gemini-embedding-001 ที่ 1,536 มิติ ให้ตรงกับคอลัมน์ที่มีอยู่เดิม ทำให้ไม่ต้องย้ายข้อมูลเก่า</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>เก็บพร้อมดัชนี</h3>
+            <p>เวกเตอร์ถูกเก็บใน Postgres และสร้างดัชนี HNSW แบบ cosine เพื่อให้ค้นหาเร็วขึ้นเมื่อข้อมูลโต</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>ดึงบริบทที่เกี่ยวข้อง</h3>
+            <p>คำถามถูกฝังด้วยโมเดลเดียวกัน แล้วเรียกฟังก์ชัน SQL ที่ผสมความคล้ายเชิงเวกเตอร์กับน้ำหนักคำสำคัญ</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>กรองด้วยเกณฑ์</h3>
+            <p>บริบทที่ต่ำกว่า 0.6 ถูกตัดออก เพื่อไม่ให้คำตอบอ้างอิงบันทึกที่ไม่เกี่ยวข้องเพียงเพราะต้องส่งข้อมูลให้ครบ</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>ตอบจากบริบทเท่านั้น</h3>
+            <p>โมเดลได้รับเฉพาะบันทึกที่ดึงมา 5 รายการ พร้อมคำสั่งให้ยึดบริบท และไม่แต่งข้อมูลเพิ่ม</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="retrieval">
+      <div class="section-head">
+        <p class="kicker">การค้นคืน</p>
+        <h2>เลือกวิธีค้นหาจากข้อจำกัด ไม่ใช่จากแฟชั่น</h2>
+      </div>
+      <div class="grid-3">
+        <article class="card">
+          <span class="metric-inline">HNSW</span>
+          <h3>ทำไมไม่ใช้ brute force</h3>
+          <p>ตารางเดียวและดัชนีเดียวทำให้การค้นหาไม่ต้องสแกนทั้งตาราง เมื่อข้อมูลของผู้ใช้คนเดียวโตขึ้น เวลาตอบยังคงที่</p>
+        </article>
+        <article class="card">
+          <span class="metric-inline">0.6</span>
+          <h3>ปรับเกณฑ์จาก 0.7 ลงมา</h3>
+          <p>ที่ 0.7 ผลลัพธ์ที่ควรเจอถูกตัดทิ้งบ่อยเกินไป ที่ 0.6 คำตอบที่ผิดลดลงโดยไม่ทำให้เสียงรบกวนเพิ่ม</p>
+        </article>
+        <article class="card">
+          <span class="metric-inline">hybrid</span>
+          <h3>ผสมคำสำคัญกับความหมาย</h3>
+          <p>ภาษาไทยและชื่อเฉพาะต้องการการจับคำตรงตัวด้วย จึงให้น้ำหนักคำสำคัญในฟังก์ชันเดียวกับการค้นเชิงเวกเตอร์</p>
+        </article>
+      </div>
+      <div class="figure-grid" style="margin-top: 18px;">
+        <figure class="diagram-card">
+          <button class="diagram" type="button" data-full="assets/img/seq04.png">
+            <img src="assets/img/seq04.png" alt="แผนภาพลำดับข้อความการค้นหาและตอบด้วย RAG" loading="lazy" />
+          </button>
+          <figcaption><strong>SEQ-04 — ดึงบริบทแล้วตอบ</strong>คำถามถูกฝังก่อน แล้วจึงดึงบริบทของผู้ใช้เอง</figcaption>
+        </figure>
+        <figure class="diagram-card">
+          <button class="diagram" type="button" data-full="assets/img/erd.png">
+            <img src="assets/img/erd.png" alt="แผนภาพข้อมูลของตาราง diary_entries" loading="lazy" />
+          </button>
+          <figcaption><strong>ที่เก็บเวกเตอร์</strong>คอลัมน์ vector(1536) พร้อมดัชนี HNSW และ RLS</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section wrap" id="models">
+      <div class="section-head">
+        <p class="kicker">โมเดล</p>
+        <h2>สามบทบาท หนึ่ง adapter</h2>
+        <p class="section-sub">ชื่อโมเดลอ่านจาก environment ทุกครั้ง เพื่อให้เปลี่ยนผู้ให้บริการได้โดยไม่ต้องแก้โค้ด</p>
+      </div>
+      <table class="spec">
+        <thead>
+          <tr><th>บทบาท</th><th>โมเดล</th><th>เหตุผล</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Embedding</strong></td><td>gemini-embedding-001</td><td>1536 มิติตรงกับคอลัมน์เดิม และรองรับภาษาไทย</td></tr>
+          <tr><td><strong>Chat</strong></td><td>gemini-3.5-flash</td><td>ผ่าน endpoint ที่เข้ากันได้กับ OpenAI ทำให้เปลี่ยนผู้ให้บริการได้ง่าย</td></tr>
+          <tr><td><strong>Image</strong></td><td>gemini-3.1-flash-image</td><td>สร้างภาพประกอบจากสรุปอารมณ์ ติดโควตาตามแผนการใช้งาน</td></tr>
+        </tbody>
+      </table>
+      <div class="grid-2" style="margin-top: 18px;">
+        <article class="card">
+          <h3>เมื่อผู้ให้บริการล้มเหลว</h3>
+          <p>
+            ระบบแยกความล้มเหลวสามแบบ: คำขอผิดรูป ปฏิเสธสิทธิ์ และโควตาหมด
+            โดยคืนข้อความที่อ่านรู้เรื่องและยังให้ผู้ใช้เขียนบันทึกต่อได้
+          </p>
+        </article>
+        <article class="card">
+          <h3>เมื่อ embedding ล้มเหลว</h3>
+          <p>
+            บันทึกยังถูกบันทึกไว้ก่อนเรียกโมเดล ถ้าฝังเวกเตอร์ไม่สำเร็จ ผู้ใช้ไม่เสียข้อความ
+            และสามารถสร้างดัชนีใหม่ภายหลังได้
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="privacy">
+      <div class="section-head">
+        <p class="kicker">ความเป็นส่วนตัว</p>
+        <h2>ข้อมูลส่วนตัว 7 รายการ และจุดที่มันออกนอกระบบ</h2>
+        <p class="section-sub">ทุกครั้งที่ข้อความของผู้ใช้ถูกส่งไปยังผู้ให้บริการ AI จะมีจุดตรวจความยินยอมก่อนเสมอ</p>
+      </div>
+      <div class="grid-2">
+        <figure class="diagram-card">
+          <button class="diagram" type="button" data-full="assets/img/dfd-l0.png">
+            <img src="assets/img/dfd-l0.png" alt="แผนภาพการไหลของข้อมูลระดับ Context และจุดข้ามขอบเขต" loading="lazy" />
+          </button>
+          <figcaption><strong>DFD Level 0 — trust boundary</strong>ข้อความและคำถามข้ามไปยังผู้ให้บริการภายนอกที่จุดนี้</figcaption>
+        </figure>
+        <div class="card">
+          <h3>สิ่งที่บังคับใช้จริง</h3>
+          <p>
+            ผู้ใช้ต้องยอมรับก่อนใช้ฟีเจอร์ AI ครั้งแรก เพิกถอนได้จากหน้าตั้งค่า และทุกแถวถูกคุมด้วย
+            Row Level Security ที่ผูกกับ auth.uid() ไม่ใช่เพียงตัวกรองในโค้ด
+          </p>
+          <p class="tag">ตรวจโดย TC-18 และ UAT-07</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section wrap" id="evidence">
+      <div class="section-head">
+        <p class="kicker">หลักฐาน</p>
+        <h2>สิ่งที่วัดแล้ว และสิ่งที่ยังไม่ได้วัด</h2>
+      </div>
+      <div class="grid-2">
+        <article class="card">
+          <h3>วัดแล้ว</h3>
+          <p>
+            p95 ของการค้นหา 3.16 วินาที จากคำถาม 20 ข้อบนข้อมูล 30 บันทึก · อัตราการตอบที่อ้างอิงบริบท
+            ถูกตรวจด้วยมือ · 22 เทสต์อัตโนมัติผ่านใน CI ทุกครั้งที่ push
+          </p>
+        </article>
+        <article class="card">
+          <h3>ยังไม่ได้วัด</h3>
+          <p>
+            ยังไม่มีชุดประเมินคุณภาพคำตอบ (eval set) ที่มีคำตอบอ้างอิง ยังไม่ทดสอบโหลดที่ขนาดจริง
+            และฟีเจอร์สร้างภาพติดโควตาของผู้ให้บริการ จึงวัดได้ไม่สม่ำเสมอ
+          </p>
+        </article>
+      </div>
+      <div class="figure-grid" style="margin-top: 18px;">
+        <figure class="diagram-card">
+          <button class="diagram" type="button" data-full="assets/img/app-search.png">
+            <img src="assets/img/app-search.png" alt="หน้าจอค้นหาเชิงความหมายและสนทนากับบันทึก" loading="lazy" />
+          </button>
+          <figcaption><strong>หน้าจอค้นหาและสนทนา</strong>ผู้ใช้ถามด้วยคำของตัวเอง แล้วได้คำตอบจากบันทึกของตัวเอง</figcaption>
+        </figure>
+        <figure class="diagram-card">
+          <button class="diagram" type="button" data-full="assets/img/c4-l2.png">
+            <img src="assets/img/c4-l2.png" alt="แผนภาพสถาปัตยกรรม C4 ระดับ Container" loading="lazy" />
+          </button>
+          <figcaption><strong>ที่วางของทั้งระบบ</strong>Next.js, Elysia, Supabase และ Gemini ผ่าน adapter เดียว</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section wrap" id="next">
+      <div class="section-head">
+        <p class="kicker">ก้าวต่อไป</p>
+        <h2>ถ้ามีเวลาอีกหนึ่งสัปดาห์</h2>
+      </div>
+      <div class="grid-3">
+        <article class="card">
+          <h3>ชุดประเมินคำตอบ</h3>
+          <p>สร้างคำถามพร้อมคำตอบอ้างอิง แล้ววัดทั้งการดึงบริบทและความถูกต้องของคำตอบเป็นตัวเลข</p>
+        </article>
+        <article class="card">
+          <h3>จัดอันดับผลลัพธ์ใหม่</h3>
+          <p>เพิ่มขั้น rerank ด้วยโมเดลขนาดเล็ก เพื่อลดบริบทที่ไม่เกี่ยวข้องก่อนส่งให้โมเดลหลัก</p>
+        </article>
+        <article class="card">
+          <h3>ติดตามต้นทุน</h3>
+          <p>บันทึกจำนวนโทเคนและต้นทุนต่อ 1,000 คำถาม เพื่อให้ตัดสินใจเรื่องราคาได้จากข้อมูลจริง</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="limits">
+      <div class="section-head">
+        <p class="kicker">ข้อจำกัด</p>
+        <h2>สิ่งที่ยังไม่สมบูรณ์</h2>
+      </div>
+      <div class="card">
+        <p>
+          ระบบนี้พัฒนาโดยคนเดียว ข้อมูลที่ใช้วัดยังมีขนาดเล็ก และยังไม่มีการทดสอบกับผู้ใช้จริง
+          ตัวเลขประสิทธิภาพจึงเป็นตัวชี้วัดเบื้องต้น ไม่ใช่การรับประกันที่ขนาดการใช้งานจริง
+          ข้อจำกัดทั้งหมดระบุไว้ในเอกสารของโครงการ
+        </p>
+      </div>
+    </section>
+
+    <section class="section wrap" id="contact">
+      <div class="contact-card">
+        <div>
+          <p class="kicker">ติดต่อ</p>
+          <h2>สอบถามรายละเอียดหรือพิจารณาความร่วมมือ</h2>
+          <p class="section-sub">Oranut Suphatamat (Dao) · AI Engineer</p>
+        </div>
+        <ul class="contact-list">
+          <li><span>ชื่อ</span>Oranut Suphatamat (Dao)</li>
+          <li><span>อีเมล</span><a href="mailto:oranut43939@gmail.com">oranut43939@gmail.com</a></li>
+          <li><span>LinkedIn</span><a href="https://www.linkedin.com/in/oranut-suphantamat-02225635b/" target="_blank" rel="noopener">oranut-suphantamat</a></li>
+          <li><span>GitHub</span><a href="https://github.com/Zynin43839" target="_blank" rel="noopener">Zynin43839</a></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© <span id="year"></span> Oranut Suphatamat · พอร์ตโฟลิโอ AI Engineer</p>
+      <p>สร้างด้วย HTML และ CSS ไม่มีขั้นตอน build · deploy บน Vercel</p>
+      <p>
+        <a href="https://oranut-ba-portfolio.vercel.app">พอร์ตสาย BA →</a> ·
+        <a href="https://oranut-sa-portfolio.vercel.app">พอร์ตสาย SA →</a> ·
+        <a href="https://dao-portfolio-space.vercel.app">พอร์ตสาย Web dev →</a>
+      </p>
+    </div>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox" aria-label="ดูภาพขยาย">
+    <button class="lightbox-close" type="button" aria-label="ปิด">ปิด</button>
+    <img id="lightbox-img" alt="" />
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
